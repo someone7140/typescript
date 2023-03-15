@@ -1,0 +1,1 @@
+- DB の migration は`npx migrate-mongo up -f './migrations/conf/migrate-mongo-config-local.js'`の形式で実行。
