@@ -19,7 +19,7 @@
    */
   /** dbaeumer.vscode-eslint */
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "eslint.validate": [
     "javascript",
@@ -46,7 +46,8 @@
   ],
   "code-runner.runInTerminal": true,
   "code-runner.executorMap": {
-    "javascript": "node",
+    "javascript": "clear; node",
+    "typescript": "clear; npx ts-node",
     "php": "C:\\php\\php.exe",
     "python": "python",
     "perl": "perl",
