@@ -1,0 +1,25 @@
+{
+  "name": "jleague-analysis-api",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:debug": "node --inspect-brk=9229 ./node_modules/.bin/vite",
+    "build": "vite build",
+    "preview": "$npm_execpath run build && vite preview",
+    "deploy": "$npm_execpath run build && wrangler deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+  },
+  "dependencies": {
+    "@hono/graphql-server": "^0.7.0",
+    "@pothos/core": "^4.12.0",
+    "graphql": "^16.12.0",
+    "hono": "^4.11.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.2.3",
+    "tsx": "^4.21.0",
+    "vite": "^6.3.5",
+    "vite-ssr-components": "^0.5.2",
+    "wrangler": "^4.17.0"
+  }
+}
