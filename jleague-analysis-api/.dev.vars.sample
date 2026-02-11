@@ -1,1 +1,2 @@
 GRAPHIQL_ENABLE=true
+DATA_COLLECTION_DOMAIN=http://localhost

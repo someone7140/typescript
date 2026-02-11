@@ -1,15 +1,13 @@
 import { Hono } from "hono";
 import { graphqlServer } from "@hono/graphql-server";
 import SchemaBuilder from "@pothos/core";
-import { setMutations } from "./graphql/mutations";
-import { setQueries } from "./graphql/query";
 
-type Bindings = {
-  GRAPHIQL_ENABLE: string;
-};
-const app = new Hono<{ Bindings: Bindings }>();
+import { setMutations } from "@/graphql/mutations";
+import { setQueries } from "@/graphql/query";
+import { EnvBindings, GraphQLContext } from "@/type/context";
 
-const builder = new SchemaBuilder({});
+const app = new Hono<{ Bindings: EnvBindings }>();
+const builder = new SchemaBuilder<{ Context: GraphQLContext }>({});
 setQueries(builder);
 setMutations(builder);
 

@@ -13,10 +13,12 @@
     "@hono/graphql-server": "^0.7.0",
     "@pothos/core": "^4.12.0",
     "graphql": "^16.12.0",
-    "hono": "^4.11.7"
+    "hono": "^4.11.7",
+    "node-html-parser": "^7.0.2"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.2.3",
+    "@cloudflare/workers-types": "^4.20260131.0",
     "tsx": "^4.21.0",
     "vite": "^6.3.5",
     "vite-ssr-components": "^0.5.2",
