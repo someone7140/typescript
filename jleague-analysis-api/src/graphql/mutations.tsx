@@ -14,14 +14,15 @@ export const setMutations = (
         args: {
           year: t.arg.int({ required: true }),
           frameId: t.arg.int({ required: true }),
-          categoryName: t.arg.string({ required: true }),
+          category: t.arg.string({ required: true }),
         },
         resolve: async (_root, args, context) => {
           await updateTeamAndLeagueInfo(
             context.env,
+            context.get("db"),
             args.year,
             args.frameId,
-            args.categoryName,
+            args.category,
           );
           return true;
         },

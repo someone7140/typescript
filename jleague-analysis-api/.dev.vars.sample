@@ -1,2 +1,4 @@
 GRAPHIQL_ENABLE=true
 DATA_COLLECTION_DOMAIN=http://localhost
+DATABASE_URL=postgres://user:postgres@db.localtest.me:5432/j-league-analysis-db-local
+LOCAL_NEON_FETCH_POINT=http://localhost:4444

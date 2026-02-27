@@ -1,11 +1,12 @@
-import { getCompetitions, getTeams } from "@/externalApi/jLeafueData";
-import { EnvBindings } from "@/type/context";
+import { getCompetitions, getTeams } from "@/externalApi/jLeagueData";
+import { DbConnection, EnvBindings } from "@/type/context";
 
 export const updateTeamAndLeagueInfo = async (
   env: EnvBindings,
+  db: DbConnection,
   year: number,
   frameId: number,
-  categoryName: string,
+  category: string,
 ) => {
   // 指定した年のJ1のリーグ情報
   const j1Categories = await getCompetitions(
