@@ -14,7 +14,7 @@ setMutations(builder);
 
 // GraphQLエンドポイント
 app.use("/graphql", async (c, next) => {
-  const db = await getDrizzleDb();
+  const db = getDrizzleDb(c.env.DATABASE_URL, c.env.LOCAL_NEON_FETCH_POINT);
   c.set("db", db);
 
   const handler = graphqlServer({

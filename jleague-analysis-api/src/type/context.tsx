@@ -5,6 +5,8 @@ import * as schema from "@/db/schema";
 export type EnvBindings = {
   GRAPHIQL_ENABLE: string;
   DATA_COLLECTION_DOMAIN: string;
+  DATABASE_URL: string;
+  LOCAL_NEON_FETCH_POINT?: string;
 };
 
 export type DbConnection = NeonHttpDatabase<typeof schema>;
