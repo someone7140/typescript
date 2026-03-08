@@ -1,4 +1,7 @@
-import { updateTeamAndLeagueInfo } from "@/service/dataCollectionService";
+import {
+  updatePlayerInfo,
+  updateTeamAndLeagueInfo,
+} from "@/service/dataCollectionService";
 import { GraphQLContext } from "@/type/context";
 
 export const setMutations = (
@@ -24,6 +27,7 @@ export const setMutations = (
             args.frameId,
             args.category,
           );
+          await updatePlayerInfo(context.env, context.get("db"), args.year);
           return true;
         },
       }),

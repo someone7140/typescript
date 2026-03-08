@@ -1,9 +1,13 @@
-import { inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { competitions } from "@/db/schema";
 import { DbConnection } from "@/type/context";
 
 export const getCompetitionsByIds = async (db: DbConnection, ids: number[]) => {
   return db.select().from(competitions).where(inArray(competitions.id, ids));
+};
+
+export const getCompetitionsByYear = async (db: DbConnection, year: number) => {
+  return db.select().from(competitions).where(eq(competitions.year, year));
 };
 
 export const addCompetition = async (

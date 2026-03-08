@@ -61,3 +61,27 @@ export const getTeams = async (url: string, competitionId: number) => {
 
   return teamsResponse.teamList;
 };
+
+// 指定したチームの選手情報
+export const getPlayersHtml = async (
+  url: string,
+  teamId: number,
+  teamName: string,
+) => {
+  const formData = new FormData();
+  formData.append("team_year_id_ex", `${teamId}`);
+  formData.append("last_belong_team", `${teamId}`);
+  formData.append("selectedTeamName", `${teamName}`);
+  formData.append("selectedNationalOriginName", "（選択なし）");
+  formData.append("selectedFieldPositionTypeName", "（選択なし）");
+  formData.append("selectedJLeaguePlayerTypeNmae", "すべて");
+  formData.append("selectedplayerNameFirstAlphabet", "（指定なし）");
+  formData.append("j_league_current_belong_player_type", "3");
+
+  const response = await fetch(url, {
+    method: "POST",
+    body: formData,
+  });
+
+  return await response.text();
+};

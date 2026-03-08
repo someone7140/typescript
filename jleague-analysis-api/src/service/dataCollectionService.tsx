@@ -1,10 +1,19 @@
-import { getCompetitions, getTeams } from "@/externalApi/jLeagueData";
+import {
+  getCompetitions,
+  getPlayersHtml,
+  getTeams,
+} from "@/externalApi/jLeagueData";
 import {
   addCompetition,
   getCompetitionsByIds,
+  getCompetitionsByYear,
 } from "@/repository/competitionsRepository";
-import { upsertCompetitionTeams } from "@/repository/competitionTeamsRepository";
+import {
+  getTeamsByCompetitionIds,
+  upsertCompetitionTeams,
+} from "@/repository/competitionTeamsRepository";
 import { upsertTeams } from "@/repository/teamsRepository";
+import { getPlayersFromHtml } from "@/service/scrapingService";
 import { DbConnection, EnvBindings } from "@/type/context";
 
 export const updateTeamAndLeagueInfo = async (
@@ -14,7 +23,7 @@ export const updateTeamAndLeagueInfo = async (
   frameId: number,
   category: string,
 ) => {
-  // 指定した年ののリーグ情報
+  // 指定した年のリーグ情報
   const competitionsFromApi = await getCompetitions(
     `${env.DATA_COLLECTION_DOMAIN}/SFPR01/createCompetitions`,
     year,
@@ -66,10 +75,32 @@ export const updateTeamAndLeagueInfo = async (
       db,
       teamsFromApi.map((team) => {
         return {
-          competition_id: competition.selectValue,
-          team_id: team.selectValue,
+          competitionId: competition.selectValue,
+          teamId: team.selectValue,
         };
       }),
     );
+  }
+};
+
+export const updatePlayerInfo = async (
+  env: EnvBindings,
+  db: DbConnection,
+  year: number,
+) => {
+  const competitionsFromDb = await getCompetitionsByYear(db, year);
+  const teamsFromDb = await getTeamsByCompetitionIds(
+    db,
+    competitionsFromDb.map((c) => c.id),
+  );
+
+  for (const team of teamsFromDb) {
+    const playerHtml = await getPlayersHtml(
+      `${env.DATA_COLLECTION_DOMAIN}/SFIX03/search`,
+      team.teams.id,
+      team.teams.name,
+    );
+    getPlayersFromHtml(playerHtml);
+    break;
   }
 };

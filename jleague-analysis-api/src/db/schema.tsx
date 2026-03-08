@@ -16,8 +16,17 @@ export const teams = pgTable("teams", {
 export const competitionTeams = pgTable(
   "competition_teams",
   {
-    competition_id: integer("competition_id").notNull(),
-    team_id: integer("team_id").notNull(),
+    competitionId: integer("competition_id").notNull(),
+    teamId: integer("team_id").notNull(),
   },
-  (table) => [primaryKey({ columns: [table.competition_id, table.team_id] })],
+  (table) => [primaryKey({ columns: [table.competitionId, table.teamId] })],
 );
+
+export const players = pgTable("players", {
+  id: integer("id").primaryKey(),
+  name: varchar("name").notNull(),
+  position: varchar("position").notNull(),
+  birthDate: varchar("birthDate").notNull(),
+  height: integer("height"),
+  weight: integer("weight"),
+});
