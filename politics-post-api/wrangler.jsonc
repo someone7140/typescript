@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "politics-post-api",
+  "compatibility_date": "2026-03-20",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "main": "./src/index.tsx"
+}

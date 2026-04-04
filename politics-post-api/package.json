@@ -1,0 +1,36 @@
+{
+  "name": "politics-post-api",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:debug": "node --inspect-brk=9229 ./node_modules/.bin/vite",
+    "build": "vite build",
+    "preview": "$npm_execpath run build && vite preview",
+    "deploy": "$npm_execpath run build && wrangler deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "migrate": "npx dotenv -e .dev.vars -- tsx --tsconfig tsconfig.migrate.json ./src/db/migration/allMigration.tsx",
+    "postinstall": "patch-package && npm run cf-typegen"
+  },
+  "dependencies": {
+    "@hono/graphql-server": "^0.7.0",
+    "@pothos/core": "^4.12.0",
+    "@pothos/plugin-scope-auth": "^4.1.6",
+    "@std/uuid": "npm:@jsr/std__uuid@^1.1.0",
+    "camelcase-keys": "^10.0.2",
+    "graphql": "^16.13.1",
+    "hono": "^4.12.5",
+    "mongodb": "^7.1.0",
+    "openid-client": "^6.8.2",
+    "patch-package": "^8.0.1",
+    "snakecase-keys": "^9.0.2"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.26.1",
+    "@types/node": "^25.5.0",
+    "dotenv-cli": "^11.0.0",
+    "tsx": "^4.21.0",
+    "vite": "^7.3.1",
+    "vite-ssr-components": "^0.5.2",
+    "wrangler": "^4.71.0"
+  }
+}
