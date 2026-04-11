@@ -2,7 +2,7 @@ import camelcaseKeys from "camelcase-keys";
 import { Db } from "mongodb";
 
 import { POSTS_COLLECTION } from "@/db/collectionConstants";
-import { toSnake } from "./typeConvertUtil";
+import { ToCamelCase, toSnake } from "./typeConvertUtil";
 
 type PostCollection = {
   _id: string;
@@ -13,11 +13,9 @@ type PostCollection = {
   open_at: Date;
 };
 
-export type PostEntity = ReturnType<
-  typeof camelcaseKeys<PostCollection, { deep: true }>
->;
+export type PostEntity = ToCamelCase<PostCollection>;
 
-export const registerPost = async (db: Db, account: PostEntity) => {
+export const registerPost = async (db: Db, post: PostEntity) => {
   const postsCol = db.collection<PostCollection>(POSTS_COLLECTION);
-  await postsCol.insertOne(toSnake<PostCollection>(account));
+  await postsCol.insertOne(toSnake<PostCollection>(post));
 };

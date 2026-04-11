@@ -1,10 +1,11 @@
-import { generate as generateV7, extractTimestamp } from "@std/uuid/v7";
+import { generate as generateV7 } from "@std/uuid/v7";
 import { Db } from "mongodb";
 import { InputShapeFromFields } from "@pothos/core";
 
 import { RegisterUserAccountFromGoogleRequest } from "@/graphql/graphqlType";
 import {
   getUserAccountByGoogleId,
+  getUserAccountById,
   getUserAccountByUserSettingId,
   registerUserAccount,
 } from "@/repository/userAccountsRepository";
@@ -15,7 +16,12 @@ import {
   getUserAccountAuthToken,
 } from "@/service/authenticationService";
 import { EnvBindings } from "@/type/context";
-import { AppGraphQLError, BAD_REQUEST, FORBIDDEN_ERROR } from "@/type/error";
+import {
+  AppGraphQLError,
+  AUTH_ERROR,
+  BAD_REQUEST,
+  FORBIDDEN_ERROR,
+} from "@/type/error";
 
 export const getUserAccountRegisterTokenFromGoogleAuthCode = async (
   env: EnvBindings,
@@ -34,7 +40,7 @@ export const getUserAccountRegisterTokenFromGoogleAuthCode = async (
   return {
     token,
     name: googleUserInfo.name,
-    picture: googleUserInfo.picture,
+    imageUrl: googleUserInfo.picture,
   };
 };
 
@@ -66,13 +72,60 @@ export const registerUserAccountFromGoogle = async (
     imageUrl: payload.picture,
   };
   await registerUserAccount(db, newUser);
-  console.log(extractTimestamp(newUser._id));
 
   // jwtトークンとともにレスポンスを返す
   const token = await getUserAccountAuthToken(env, newUser._id);
   return {
     authToken: token,
+    userSettingId: req.userSettingId,
     name: newUser.name,
-    picture: newUser.imageUrl,
+    urlList: newUser.urlList,
+    detail: newUser.detail,
+    imageUrl: newUser.imageUrl,
+  };
+};
+
+export const getUserAccountFromGoogleAuthCode = async (
+  env: EnvBindings,
+  db: Db,
+  authCode: string,
+) => {
+  const googleUserInfo = await getGoogleUserInfoFromAuthCode(env, authCode);
+  const registeredUser = await getUserAccountByGoogleId(db, googleUserInfo.id);
+  if (!registeredUser) {
+    throw new AppGraphQLError("Can not found user", AUTH_ERROR);
+  }
+
+  // jwtトークンとともにレスポンスを返す
+  const token = await getUserAccountAuthToken(env, registeredUser._id);
+  return {
+    authToken: token,
+    userSettingId: registeredUser.userSettingId,
+    urlList: registeredUser.urlList,
+    detail: registeredUser.detail,
+    name: registeredUser.name,
+    imageUrl: registeredUser.imageUrl,
+  };
+};
+
+export const getUserAccountByUserAccountId = async (
+  env: EnvBindings,
+  db: Db,
+  userAccountId: string,
+) => {
+  const registeredUser = await getUserAccountById(db, userAccountId);
+  if (!registeredUser) {
+    throw new AppGraphQLError("Can not found user", AUTH_ERROR);
+  }
+
+  // jwtトークンとともにレスポンスを返す
+  const token = await getUserAccountAuthToken(env, registeredUser._id);
+  return {
+    authToken: token,
+    userSettingId: registeredUser.userSettingId,
+    urlList: registeredUser.urlList,
+    detail: registeredUser.detail,
+    name: registeredUser.name,
+    imageUrl: registeredUser.imageUrl,
   };
 };

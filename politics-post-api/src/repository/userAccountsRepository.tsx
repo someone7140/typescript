@@ -1,8 +1,7 @@
-import camelcaseKeys from "camelcase-keys";
 import { Db } from "mongodb";
 
 import { USER_ACCOUNTS_COLLECTION } from "@/db/collectionConstants";
-import { toCamel, toSnake } from "./typeConvertUtil";
+import { ToCamelCase, toCamel, toSnake } from "./typeConvertUtil";
 
 type AccountUserCollection = {
   _id: string;
@@ -14,9 +13,7 @@ type AccountUserCollection = {
   image_url?: string;
 };
 
-export type AccountUserEntity = ReturnType<
-  typeof camelcaseKeys<AccountUserCollection, { deep: true }>
->;
+export type AccountUserEntity = ToCamelCase<AccountUserCollection>;
 
 export const getUserAccountByGoogleId = async (db: Db, googleId: string) => {
   const userAccountsCol = db.collection<AccountUserCollection>(
@@ -29,7 +26,7 @@ export const getUserAccountByGoogleId = async (db: Db, googleId: string) => {
     return null;
   }
 
-  return toCamel<AccountUserEntity>(userAccount);
+  return toCamel<AccountUserCollection>(userAccount);
 };
 
 export const getUserAccountByUserSettingId = async (
@@ -46,7 +43,21 @@ export const getUserAccountByUserSettingId = async (
     return null;
   }
 
-  return toCamel<AccountUserEntity>(userAccount);
+  return toCamel<AccountUserCollection>(userAccount);
+};
+
+export const getUserAccountById = async (db: Db, id: string) => {
+  const userAccountsCol = db.collection<AccountUserCollection>(
+    USER_ACCOUNTS_COLLECTION,
+  );
+  const userAccount = await userAccountsCol.findOne<AccountUserCollection>({
+    _id: id,
+  });
+  if (!userAccount) {
+    return null;
+  }
+
+  return toCamel<AccountUserCollection>(userAccount);
 };
 
 export const registerUserAccount = async (

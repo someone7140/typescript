@@ -1,4 +1,5 @@
 import {
+  POST_EVALUATES_COLLECTION,
   POSTS_COLLECTION,
   USER_ACCOUNTS_COLLECTION,
 } from "../collectionConstants";
@@ -42,6 +43,22 @@ async function runMigrations() {
     {
       key: { open_at: 1 },
       name: "idx_open_at",
+      background: true,
+    },
+  ]);
+
+  const postEvaluatesCol = (await connection.getDb()).collection(
+    POST_EVALUATES_COLLECTION,
+  );
+  await postEvaluatesCol.createIndexes([
+    {
+      key: { user_account_id: 1 },
+      name: "idx_user_account_id",
+      background: true,
+    },
+    {
+      key: { post_id: 1 },
+      name: "idx_post_id",
       background: true,
     },
   ]);

@@ -1,5 +1,10 @@
-import { registerUserAccountFromGoogle } from "@/usecase/userAccountUsecase";
+import { registerMyPost } from "@/usecase/postUsecase";
 import {
+  getUserAccountFromGoogleAuthCode,
+  registerUserAccountFromGoogle,
+} from "@/usecase/userAccountUsecase";
+import {
+  AuthCodeForGoogleRequest,
   builder,
   RegisterPostRequest,
   RegisterUserAccountFromGoogleRequest,
@@ -20,13 +25,24 @@ export const setMutations = () => {
           );
         },
       }),
+      loginByGoogle: t.field({
+        type: UserAccountAuthResponse,
+        args: AuthCodeForGoogleRequest,
+        resolve: async (_root, args, context) => {
+          return await getUserAccountFromGoogleAuthCode(
+            context.env,
+            context.var.db,
+            args.authCode,
+          );
+        },
+      }),
       registerPost: t.boolean({
         authScopes: {
           isAuthenticated: true,
         },
         args: RegisterPostRequest,
         resolve: async (_root, args, context) => {
-          console.log(context.var.loginUserAccountId);
+          registerMyPost(context.var.db, args, context.var.loginUserAccountId!);
           return true;
         },
       }),
