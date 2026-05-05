@@ -97,7 +97,6 @@ export const getUserAccountAuthToken = async (
 
 // Authenticationヘッダーのトークンからコンテキストに認証情報をセット
 export const setAuthInfoToContext = async (
-  env: EnvBindings,
   context: GraphQLContext,
   authHeader?: string,
 ) => {
@@ -106,7 +105,7 @@ export const setAuthInfoToContext = async (
     try {
       const payload = (await verify(
         token,
-        env.JWT_SECRET,
+        context.env.JWT_SECRET,
         "HS256",
       )) as UserAccountJwtPayload;
       context.set("loginUserAccountId", payload.userAccountId);

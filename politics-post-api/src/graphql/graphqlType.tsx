@@ -1,4 +1,3 @@
-import { GraphQLBoolean } from "graphql";
 import SchemaBuilder from "@pothos/core";
 import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
 

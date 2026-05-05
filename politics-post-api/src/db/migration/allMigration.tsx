@@ -3,67 +3,69 @@ import {
   POSTS_COLLECTION,
   USER_ACCOUNTS_COLLECTION,
 } from "../collectionConstants";
-import { MongoConnection } from "../mongoConnection";
+import { getMongoClient } from "../mongoConnection";
 
 async function runMigrations() {
-  const connection = new MongoConnection(process.env.MONGODB_URI!);
-  console.log("Running migrations...");
-  // Migration実行
-  const userAccountsCol = (await connection.getDb()).collection(
-    USER_ACCOUNTS_COLLECTION,
-  );
-  await userAccountsCol.createIndexes([
-    {
-      key: { user_setting_id: 1 },
-      name: "idx_user_setting_id",
-      unique: true,
-      background: true,
-    },
-    {
-      key: { google_id: 1 },
-      name: "idx_google_id",
-      unique: true,
-      partialFilterExpression: { google_id: { $gte: "" } },
-      background: true,
-    },
-  ]);
+  const dbClient = await getMongoClient(process.env.MONGODB_URI!);
+  try {
+    const db = dbClient.db();
 
-  const postsCol = (await connection.getDb()).collection(POSTS_COLLECTION);
-  await postsCol.createIndexes([
-    {
-      key: { user_account_id: 1 },
-      name: "idx_user_account_id",
-      background: true,
-    },
-    {
-      key: { category_ids: 1 },
-      name: "idx_category_ids",
-      background: true,
-    },
-    {
-      key: { open_at: 1 },
-      name: "idx_open_at",
-      background: true,
-    },
-  ]);
+    console.log("Running migrations...");
+    // Migration実行
+    const userAccountsCol = db.collection(USER_ACCOUNTS_COLLECTION);
+    await userAccountsCol.createIndexes([
+      {
+        key: { user_setting_id: 1 },
+        name: "idx_user_setting_id",
+        unique: true,
+        background: true,
+      },
+      {
+        key: { google_id: 1 },
+        name: "idx_google_id",
+        unique: true,
+        partialFilterExpression: { google_id: { $gte: "" } },
+        background: true,
+      },
+    ]);
 
-  const postEvaluatesCol = (await connection.getDb()).collection(
-    POST_EVALUATES_COLLECTION,
-  );
-  await postEvaluatesCol.createIndexes([
-    {
-      key: { user_account_id: 1 },
-      name: "idx_user_account_id",
-      background: true,
-    },
-    {
-      key: { post_id: 1 },
-      name: "idx_post_id",
-      background: true,
-    },
-  ]);
+    const postsCol = db.collection(POSTS_COLLECTION);
+    await postsCol.createIndexes([
+      {
+        key: { user_account_id: 1 },
+        name: "idx_user_account_id",
+        background: true,
+      },
+      {
+        key: { category_ids: 1 },
+        name: "idx_category_ids",
+        background: true,
+      },
+      {
+        key: { open_at: 1 },
+        name: "idx_open_at",
+        background: true,
+      },
+    ]);
 
-  console.log("Migrations completed!");
+    const postEvaluatesCol = db.collection(POST_EVALUATES_COLLECTION);
+    await postEvaluatesCol.createIndexes([
+      {
+        key: { user_account_id: 1 },
+        name: "idx_user_account_id",
+        background: true,
+      },
+      {
+        key: { post_id: 1 },
+        name: "idx_post_id",
+        background: true,
+      },
+    ]);
+
+    console.log("Migrations completed!");
+  } finally {
+    await dbClient.close();
+  }
 }
 
 runMigrations()

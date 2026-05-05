@@ -1,44 +1,13 @@
-import { MongoClient, MongoClientOptions, type Db } from "mongodb";
+import { MongoClient } from "mongodb";
 
-export class MongoConnection {
-  private client: MongoClient | null = null;
-  private connectPromise: Promise<MongoClient> | null = null; // 接続中の重複防止
+export const getMongoClient = async (uri: string): Promise<MongoClient> => {
+  const client = new MongoClient(uri, {
+    maxPoolSize: 1,
+    serverSelectionTimeoutMS: 3000,
+    connectTimeoutMS: 5000,
+    socketTimeoutMS: 10000,
+  });
 
-  constructor(private readonly uri: string) {}
-
-  async getDb(): Promise<Db> {
-    if (!this.connectPromise) {
-      const client = new MongoClient(this.uri, {
-        maxPoolSize: 5,
-        minPoolSize: 1,
-        serverSelectionTimeoutMS: 5000,
-        connectTimeoutMS: 10000,
-        socketTimeoutMS: 30000,
-      } as MongoClientOptions);
-
-      this.connectPromise = client
-        .connect()
-        .then((connectedClient) => {
-          this.client = connectedClient;
-          return connectedClient;
-        })
-        .catch((err) => {
-          // 失敗時はリセット
-          this.connectPromise = null;
-          this.client = null;
-          throw err;
-        });
-    }
-
-    const client = await this.connectPromise;
-    return client.db();
-  }
-
-  async close(): Promise<void> {
-    if (this.client) {
-      await this.client.close();
-      this.client = null;
-      this.connectPromise = null;
-    }
-  }
-}
+  await client.connect();
+  return client;
+};
