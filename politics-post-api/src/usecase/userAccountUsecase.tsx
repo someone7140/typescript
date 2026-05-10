@@ -2,7 +2,10 @@ import { generate as generateV7 } from "@std/uuid/v7";
 import { Db } from "mongodb";
 import { InputShapeFromFields } from "@pothos/core";
 
-import { RegisterUserAccountFromGoogleRequest } from "@/graphql/graphqlType";
+import {
+  ErrorType,
+  RegisterUserAccountFromGoogleRequest,
+} from "@/graphql/graphqlType";
 import {
   getUserAccountByGoogleId,
   getUserAccountById,
@@ -16,12 +19,7 @@ import {
   getUserAccountAuthToken,
 } from "@/service/authenticationService";
 import { EnvBindings } from "@/type/context";
-import {
-  AppGraphQLError,
-  AUTH_ERROR,
-  BAD_REQUEST,
-  FORBIDDEN_ERROR,
-} from "@/type/error";
+import { AppGraphQLError } from "@/type/error";
 
 export const getUserAccountRegisterTokenFromGoogleAuthCode = async (
   env: EnvBindings,
@@ -32,7 +30,10 @@ export const getUserAccountRegisterTokenFromGoogleAuthCode = async (
   // gmailがすでに登録済みかチェック
   const registeredUser = await getUserAccountByGoogleId(db, googleUserInfo.id);
   if (registeredUser) {
-    throw new AppGraphQLError("Already registered user", BAD_REQUEST);
+    throw new AppGraphQLError(
+      "Already registered user",
+      ErrorType.FORBIDDEN_ERROR,
+    );
   }
 
   // jwtトークンとともにレスポンスを返す
@@ -54,11 +55,17 @@ export const registerUserAccountFromGoogle = async (
   // すでに登録済みのユーザーかチェック
   let registeredUser = await getUserAccountByGoogleId(db, payload.googleId);
   if (registeredUser) {
-    throw new AppGraphQLError("Already registered gmail", FORBIDDEN_ERROR);
+    throw new AppGraphQLError(
+      "Already registered gmail",
+      ErrorType.FORBIDDEN_ERROR,
+    );
   }
   registeredUser = await getUserAccountByUserSettingId(db, req.userSettingId);
   if (registeredUser) {
-    throw new AppGraphQLError("Already registered userSettingId", BAD_REQUEST);
+    throw new AppGraphQLError(
+      "Already registered userSettingId",
+      ErrorType.FORBIDDEN_ERROR,
+    );
   }
 
   // ユーザーを保存する
@@ -93,7 +100,7 @@ export const getUserAccountFromGoogleAuthCode = async (
   const googleUserInfo = await getGoogleUserInfoFromAuthCode(env, authCode);
   const registeredUser = await getUserAccountByGoogleId(db, googleUserInfo.id);
   if (!registeredUser) {
-    throw new AppGraphQLError("Can not found user", AUTH_ERROR);
+    throw new AppGraphQLError("Can not found user", ErrorType.NOT_FOUND);
   }
 
   // jwtトークンとともにレスポンスを返す
@@ -115,7 +122,7 @@ export const getUserAccountByUserAccountId = async (
 ) => {
   const registeredUser = await getUserAccountById(db, userAccountId);
   if (!registeredUser) {
-    throw new AppGraphQLError("Can not found user", AUTH_ERROR);
+    throw new AppGraphQLError("Can not found user", ErrorType.AUTH_ERROR);
   }
 
   // jwtトークンとともにレスポンスを返す

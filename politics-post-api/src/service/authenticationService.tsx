@@ -1,7 +1,8 @@
 import { sign, verify } from "hono/jwt";
 
+import { ErrorType } from "@/graphql/graphqlType";
 import { EnvBindings, GraphQLContext } from "@/type/context";
-import { AppGraphQLError, AUTH_ERROR, FORBIDDEN_ERROR } from "@/type/error";
+import { AppGraphQLError } from "@/type/error";
 
 type GoogleUserInfo = {
   id: string;
@@ -38,7 +39,7 @@ export const getGoogleUserInfoFromAuthCode = async (
     }),
   });
   if (!tokenRes.ok) {
-    throw new AppGraphQLError("Failed to exchange token", AUTH_ERROR);
+    throw new AppGraphQLError("Failed to exchange token", ErrorType.AUTH_ERROR);
   }
 
   // ユーザー情報取得
@@ -47,7 +48,10 @@ export const getGoogleUserInfoFromAuthCode = async (
     headers: { Authorization: `Bearer ${access_token}` },
   });
   if (!userRes.ok) {
-    throw new AppGraphQLError("Failed to fetch user info", AUTH_ERROR);
+    throw new AppGraphQLError(
+      "Failed to fetch user info",
+      ErrorType.AUTH_ERROR,
+    );
   }
 
   return await userRes.json<GoogleUserInfo>();
@@ -79,7 +83,7 @@ export const getPayloadFromGoogleRegisterToken = async (
       "HS256",
     )) as GoogleRegisterTokenJwtPayload;
   } catch (e) {
-    throw new AppGraphQLError("Invalid or expired token", FORBIDDEN_ERROR);
+    throw new AppGraphQLError("Invalid or expired token", ErrorType.AUTH_ERROR);
   }
 };
 

@@ -17,6 +17,14 @@ export const builder = new SchemaBuilder<{
   },
 });
 
+// エラー関係
+export const ErrorType = {
+  AUTH_ERROR: "AUTH_ERROR",
+  FORBIDDEN_ERROR: "FORBIDDEN_ERROR",
+  BAD_REQUEST: "BAD_REQUEST",
+  NOT_FOUND: "NOT_FOUND",
+} as const;
+
 // ユーザー関係
 export const UserAccountAuthResponse = builder.objectType(
   builder.objectRef<{
@@ -32,6 +40,8 @@ export const UserAccountAuthResponse = builder.objectType(
       authToken: t.exposeString("authToken", { nullable: false }),
       userSettingId: t.exposeString("userSettingId", { nullable: false }),
       name: t.exposeString("name", { nullable: false }),
+      urlList: t.exposeStringList("urlList", { nullable: false }),
+      detail: t.exposeString("detail"),
       imageUrl: t.exposeString("imageUrl"),
     }),
   },

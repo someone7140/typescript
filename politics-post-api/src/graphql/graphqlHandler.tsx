@@ -1,5 +1,5 @@
 import { graphqlServer } from "@hono/graphql-server";
-import { builder } from "./graphqlType";
+import { builder, ErrorType } from "./graphqlType";
 import { setQueries } from "./queries";
 import { setMutations } from "./mutations";
 
@@ -22,6 +22,10 @@ export const getGraphqlHandler = (graphiql: boolean) => {
   if (!store.handler) {
     setQueries();
     setMutations();
+    builder.enumType(ErrorType, {
+      name: "ErrorType",
+    });
+
     const schema = builder.toSchema();
 
     store.handler = graphqlServer({
