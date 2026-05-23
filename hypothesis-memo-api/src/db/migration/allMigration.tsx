@@ -1,6 +1,5 @@
 import {
-  POST_EVALUATES_COLLECTION,
-  POSTS_COLLECTION,
+  HYPOTHESES_COLLECTION,
   USER_ACCOUNTS_COLLECTION,
 } from "../collectionConstants";
 import { getMongoClient } from "../mongoConnection";
@@ -29,8 +28,8 @@ async function runMigrations() {
       },
     ]);
 
-    const postsCol = db.collection(POSTS_COLLECTION);
-    await postsCol.createIndexes([
+    const hypothesesCol = db.collection(HYPOTHESES_COLLECTION);
+    await hypothesesCol.createIndexes([
       {
         key: { user_account_id: 1 },
         name: "idx_user_account_id",
@@ -42,22 +41,18 @@ async function runMigrations() {
         background: true,
       },
       {
-        key: { open_at: 1 },
-        name: "idx_open_at",
-        background: true,
-      },
-    ]);
-
-    const postEvaluatesCol = db.collection(POST_EVALUATES_COLLECTION);
-    await postEvaluatesCol.createIndexes([
-      {
-        key: { user_account_id: 1 },
-        name: "idx_user_account_id",
+        key: { is_open: 1 },
+        name: "idx_is_open",
         background: true,
       },
       {
-        key: { post_id: 1 },
-        name: "idx_post_id",
+        key: { fixed_at: 1 },
+        name: "idx_fixed_at",
+        background: true,
+      },
+      {
+        key: { "evaluates.fixed_at": 1 },
+        name: "idx_evaluates_fixed_at",
         background: true,
       },
     ]);

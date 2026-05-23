@@ -1,0 +1,6 @@
+GRAPHIQL_ENABLE=true
+FRONTEND_DOMAIN=http://localhost:3000
+GOOGLE_CLIENT_ID=client_id
+GOOGLE_CLIENT_SECRET=secret
+MONGODB_URI=mongodb://localhost:27017/politics-post-db-local
+JWT_SECRET=secret
