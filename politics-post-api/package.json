@@ -17,7 +17,7 @@
     "@pothos/plugin-scope-auth": "^4.1.7",
     "@std/uuid": "npm:@jsr/std__uuid@^1.1.1",
     "camelcase-keys": "^10.0.2",
-    "graphql": "^17.0.2",
+    "graphql": "^16.14.2",
     "graphql-scalars": "^1.25.0",
     "hono": "^4.12.29",
     "mongodb": "^7.5.0",
