@@ -33,9 +33,13 @@ export const toCamel = <TInput extends ObjectLike>(
   return camelcaseKeys(obj, { deep: true, exclude }) as ToCamelCase<TInput>;
 };
 
-export const toSnake = <TOutput extends ObjectLike>(
-  obj: ObjectLike | readonly ObjectLike[],
-): TOutput => {
+export function toSnake<TOutput extends ObjectLike>(
+  obj: readonly any[],
+): TOutput[];
+
+export function toSnake<TOutput extends ObjectLike>(obj: any): TOutput;
+
+export function toSnake(obj: any): any {
   const exclude = ["_id", ...collectDateKeys(obj)];
-  return snakecaseKeys(obj, { deep: true, exclude }) as TOutput;
-};
+  return snakecaseKeys(obj, { deep: true, exclude });
+}

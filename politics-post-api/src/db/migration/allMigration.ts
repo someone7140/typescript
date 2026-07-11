@@ -1,5 +1,6 @@
 import {
   POST_EVALUATES_COLLECTION,
+  POST_TAGS_COLLECTION,
   POSTS_COLLECTION,
   USER_ACCOUNTS_COLLECTION,
 } from "../collectionConstants";
@@ -37,8 +38,8 @@ async function runMigrations() {
         background: true,
       },
       {
-        key: { category_ids: 1 },
-        name: "idx_category_ids",
+        key: { tag_ids: 1 },
+        name: "idx_tag_ids",
         background: true,
       },
       {
@@ -47,8 +48,13 @@ async function runMigrations() {
         background: true,
       },
       {
-        key: { open_at: 1 },
-        name: "idx_open_at",
+        key: { commit_at: 1 },
+        name: "idx_commit_at",
+        background: true,
+      },
+      {
+        key: { updated_at: 1 },
+        name: "idx_updated_at",
         background: true,
       },
     ]);
@@ -66,8 +72,28 @@ async function runMigrations() {
         background: true,
       },
       {
-        key: { update_at: 1 },
-        name: "idx_update_at",
+        key: { updated_at: 1 },
+        name: "idx_updated_at",
+        background: true,
+      },
+    ]);
+
+    const postTagsCol = db.collection(POST_TAGS_COLLECTION);
+    await postTagsCol.createIndexes([
+      {
+        key: { tag_name: 1 },
+        name: "idx_tag_name",
+        background: true,
+        collation: { locale: "ja" },
+      },
+      {
+        key: { user_account_ids: 1 },
+        name: "idx_user_account_ids",
+        background: true,
+      },
+      {
+        key: { status: 1 },
+        name: "idx_status",
         background: true,
       },
     ]);

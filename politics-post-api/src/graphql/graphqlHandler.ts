@@ -1,7 +1,9 @@
+import { DateTimeResolver } from "graphql-scalars";
 import { graphqlServer } from "@hono/graphql-server";
-import { builder, ErrorType } from "./graphqlType";
-import { setQueries } from "./queries";
+
+import { builder } from "./graphqlType";
 import { setMutations } from "./mutations";
+import { setQueries } from "./queries";
 
 type GlobalGraphql = {
   handler?: ReturnType<typeof graphqlServer>;
@@ -22,6 +24,8 @@ export const getGraphqlHandler = (graphiql: boolean) => {
   if (!store.handler) {
     setQueries();
     setMutations();
+
+    builder.addScalarType("DateTime", DateTimeResolver, {});
 
     const schema = builder.toSchema();
 

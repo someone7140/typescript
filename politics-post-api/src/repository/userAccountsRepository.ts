@@ -3,7 +3,7 @@ import { Db } from "mongodb";
 import { USER_ACCOUNTS_COLLECTION } from "@/db/collectionConstants";
 import { ToCamelCase, toCamel, toSnake } from "./typeConvertUtil";
 
-type AccountUserCollection = {
+export type AccountUserCollection = {
   _id: string;
   name: string;
   user_setting_id: string;

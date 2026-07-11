@@ -1,4 +1,4 @@
-import { registerMyPost } from "@/usecase/postUsecase";
+import { registerMyPost, updateMyPost } from "@/usecase/postUsecase";
 import {
   getUserAccountFromGoogleAuthCode,
   registerUserAccountFromGoogle,
@@ -8,6 +8,7 @@ import {
   builder,
   RegisterPostRequest,
   RegisterUserAccountFromGoogleRequest,
+  UpdatePostRequest,
   UserAccountAuthResponse,
 } from "./graphqlType";
 
@@ -43,6 +44,16 @@ export const setMutations = () => {
         args: RegisterPostRequest,
         resolve: async (_root, args, context) => {
           registerMyPost(context.var.db, args, context.var.loginUserAccountId!);
+          return true;
+        },
+      }),
+      updatePost: t.boolean({
+        authScopes: {
+          isAuthenticated: true,
+        },
+        args: UpdatePostRequest,
+        resolve: async (_root, args, context) => {
+          updateMyPost(context.var.db, args, context.var.loginUserAccountId!);
           return true;
         },
       }),
