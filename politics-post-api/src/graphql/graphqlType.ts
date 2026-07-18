@@ -158,7 +158,7 @@ export const PostTagResponse = builder.objectType(
   {
     fields: (t) => ({
       id: t.exposeString("id", { nullable: false }),
-      title: t.exposeString("tagName", { nullable: false }),
+      tagName: t.exposeString("tagName", { nullable: false }),
     }),
   },
 );
@@ -207,7 +207,7 @@ export const PostResponse = builder.objectType(
       }),
       commitAt: t.field({
         type: "DateTime",
-        resolve: (parent) => parent.updateAt,
+        resolve: (parent) => parent.commitAt,
         nullable: true,
       }),
     }),
