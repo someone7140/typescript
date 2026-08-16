@@ -28,17 +28,21 @@ export const registerPostTags = async (db: Db, tags: PostTagEntity[]) => {
   );
 };
 
-export const getPostTagsByNames = async (db: Db, tagNames: string[]) => {
+export const getPostTagsByNames = async (
+  db: Db,
+  tagNames: string[],
+): Promise<PostTagEntity[]> => {
   const tagsCol = db.collection<PostTagCollection>(POST_TAGS_COLLECTION);
-  const results = tagsCol.find({
-    tag_name: { $in: tagNames },
-  });
 
-  return await results
-    .map((col) => {
-      return toCamel<PostTagCollection>(col);
+  const results = await tagsCol
+    .find({
+      tag_name: { $in: tagNames },
     })
     .toArray();
+
+  return results.map((col) => {
+    return toCamel<PostTagCollection>(col);
+  });
 };
 
 export const getPostTagsByKeywordAndUserAuthority = async (
@@ -66,17 +70,16 @@ export const getPostTagsByKeywordAndUserAuthority = async (
     });
   }
 
-  const results = tagsCol
+  const results = await tagsCol
     .find({
       $or: filters,
     })
     .collation({ locale: "ja" })
     .sort({ tag_name: 1 })
-    .limit(100);
-
-  return await results
-    .map((col) => {
-      return toCamel<PostTagCollection>(col);
-    })
+    .limit(100)
     .toArray();
+
+  return results.map((col) => {
+    return toCamel<PostTagCollection>(col);
+  });
 };

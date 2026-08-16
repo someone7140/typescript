@@ -43,7 +43,11 @@ export const setMutations = () => {
         },
         args: RegisterPostRequest,
         resolve: async (_root, args, context) => {
-          registerMyPost(context.var.db, args, context.var.loginUserAccountId!);
+          await registerMyPost(
+            context.var.db,
+            args,
+            context.var.loginUserAccountId!,
+          );
           return true;
         },
       }),
@@ -53,7 +57,11 @@ export const setMutations = () => {
         },
         args: UpdatePostRequest,
         resolve: async (_root, args, context) => {
-          updateMyPost(context.var.db, args, context.var.loginUserAccountId!);
+          await updateMyPost(
+            context.var.db,
+            args,
+            context.var.loginUserAccountId!,
+          );
           return true;
         },
       }),

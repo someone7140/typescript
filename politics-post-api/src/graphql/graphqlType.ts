@@ -1,4 +1,4 @@
-import SchemaBuilder, { SchemaTypes } from "@pothos/core";
+import SchemaBuilder from "@pothos/core";
 import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
 
 import { GraphQLContext } from "@/type/context";

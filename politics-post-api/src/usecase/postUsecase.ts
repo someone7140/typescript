@@ -91,7 +91,7 @@ const toPostResultList = (r: Awaited<ReturnType<typeof getPosts>>[number]) => ({
   status: r.status,
   updateAt: r.updatedAt,
   tags: r.tags.map((tag) => ({
-    id: tag.id,
+    id: ("_id" in tag ? tag._id : tag.id) as string,
     tagName: tag.tagName,
   })),
   userAccount: {

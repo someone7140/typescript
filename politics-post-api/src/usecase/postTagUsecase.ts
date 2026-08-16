@@ -61,7 +61,7 @@ export const getTagIdsWithRegister = async (
   });
 
   if (registerTags.length > 0) {
-    registerPostTags(db, registerTags);
+    await registerPostTags(db, registerTags);
   }
 
   return returnTagIds;
@@ -72,6 +72,10 @@ export const getPostTagsByKeywordAndUserAccount = async (
   keyword: string,
   userAccountId?: string,
 ) => {
+  if (!keyword) {
+    return [];
+  }
+
   const tags = await getPostTagsByKeywordAndUserAuthority(
     db,
     keyword,
