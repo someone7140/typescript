@@ -1,4 +1,8 @@
-import { registerMyPost, updateMyPost } from "@/usecase/postUsecase";
+import {
+  deleteMyPost,
+  registerMyPost,
+  updateMyPost,
+} from "@/usecase/postUsecase";
 import {
   getUserAccountFromGoogleAuthCode,
   registerUserAccountFromGoogle,
@@ -57,9 +61,25 @@ export const setMutations = () => {
         },
         args: UpdatePostRequest,
         resolve: async (_root, args, context) => {
-          await updateMyPost(
+          await deleteMyPost(
             context.var.db,
-            args,
+            args.id,
+            context.var.loginUserAccountId!,
+          );
+          return true;
+        },
+      }),
+      deletePost: t.boolean({
+        authScopes: {
+          isAuthenticated: true,
+        },
+        args: builder.args((t) => ({
+          id: t.string({ required: true }),
+        })),
+        resolve: async (_root, args, context) => {
+          await deleteMyPost(
+            context.var.db,
+            args.id,
             context.var.loginUserAccountId!,
           );
           return true;

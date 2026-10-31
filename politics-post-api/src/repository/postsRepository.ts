@@ -18,7 +18,6 @@ type PostCollection = {
   user_account_id: string;
   status: PostStatusType;
   updated_at: Date;
-  description?: string;
   commit_at?: Date;
 };
 
@@ -39,11 +38,20 @@ export const updatePost = async (db: Db, post: PostEntity) => {
   );
 };
 
+export const deletePost = async (
+  db: Db,
+  id: string,
+  userAccountId: string,
+) => {
+  const postsCol = db.collection<PostCollection>(POSTS_COLLECTION);
+  await postsCol.deleteOne({ _id: id, user_account_id: userAccountId });
+};
+
 export const getPosts = async (
   db: Db,
   userAccountId?: string,
-  id?: string,
   status?: PostStatusType,
+  id?: string,
 ) => {
   const postsCol = db.collection<PostCollection>(POSTS_COLLECTION);
 

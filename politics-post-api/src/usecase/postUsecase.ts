@@ -10,6 +10,7 @@ import {
   UpdatePostRequest,
 } from "@/graphql/graphqlType";
 import {
+  deletePost,
   getPosts,
   registerPost,
   updatePost,
@@ -36,7 +37,6 @@ export const registerMyPost = async (
     tagIds: tagIds,
     status: req.status,
     updatedAt: new Date(),
-    description: req.description ?? undefined,
     commitAt:
       req.status === "OPEN" || req.status === "PRIVATE"
         ? new Date()
@@ -50,17 +50,7 @@ export const updateMyPost = async (
   req: InputShapeFromFields<typeof UpdatePostRequest>,
   userAccountId: string,
 ) => {
-  const registeredPosts = await getPosts(db, userAccountId, req.id);
-  if (registeredPosts.length === 0) {
-    throw new AppGraphQLError("Can not found user", ErrorType.NOT_FOUND);
-  }
-  if (registeredPosts[0].status !== PostStatus.DRAFT) {
-    throw new AppGraphQLError(
-      "Edit only status DRAFT",
-      ErrorType.FORBIDDEN_ERROR,
-    );
-  }
-
+  await checkDraftPost(db, userAccountId, req.id);
   const tagIds = await getTagIdsWithRegister(
     db,
     req.tagNames,
@@ -75,13 +65,21 @@ export const updateMyPost = async (
     tagIds: tagIds,
     status: req.status,
     updatedAt: new Date(),
-    description: req.description ?? undefined,
     commitAt:
       req.status === "OPEN" || req.status === "PRIVATE"
         ? new Date()
         : undefined,
   };
   await updatePost(db, updatedPost);
+};
+
+export const deleteMyPost = async (
+  db: Db,
+  id: string,
+  userAccountId: string,
+) => {
+  await checkDraftPost(db, userAccountId, id);
+  await deletePost(db, id, userAccountId);
 };
 
 const toPostResultList = (r: Awaited<ReturnType<typeof getPosts>>[number]) => ({
@@ -104,16 +102,30 @@ const toPostResultList = (r: Awaited<ReturnType<typeof getPosts>>[number]) => ({
   commitAt: r.commitAt,
 });
 
+const checkDraftPost = async (db: Db, userAccountId: string, id: string) => {
+  const registeredPosts = await getPosts(db, userAccountId, undefined, id);
+  if (registeredPosts.length === 0) {
+    throw new AppGraphQLError("Can not found user", ErrorType.NOT_FOUND);
+  }
+  if (registeredPosts[0].status !== PostStatus.DRAFT) {
+    throw new AppGraphQLError(
+      "Edit only status DRAFT",
+      ErrorType.FORBIDDEN_ERROR,
+    );
+  }
+};
+
 export const getMyPostLists = async (
   db: Db,
   userAccountId: string,
   status?: PostStatusType,
+  id?: string,
 ) => {
-  const results = await getPosts(db, userAccountId, undefined, status);
+  const results = await getPosts(db, userAccountId, status, id);
   return results.map(toPostResultList);
 };
 
 export const getOpenPostLists = async (db: Db) => {
-  const results = await getPosts(db, undefined, undefined, "OPEN");
+  const results = await getPosts(db, undefined, "OPEN", undefined);
   return results.map(toPostResultList);
 };

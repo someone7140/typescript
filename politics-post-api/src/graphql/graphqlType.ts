@@ -134,7 +134,6 @@ const PostRequestFields = (
     required: true,
   }),
   tagNames: t.stringList({ required: true }),
-  description: t.string({ required: false }),
 });
 
 export const RegisterPostRequest = builder.args((t) => ({
@@ -168,6 +167,7 @@ export const MyPostsRequest = builder.args((t) => ({
     type: PostStatusEnum,
     required: false,
   }),
+  id: t.string({ required: false }),
 }));
 export const PostResponse = builder.objectType(
   builder.objectRef<{

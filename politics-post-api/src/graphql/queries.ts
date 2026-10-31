@@ -62,6 +62,7 @@ export const setQueries = () => {
             context.var.db,
             context.var.loginUserAccountId!,
             _args.status ?? undefined,
+            _args.id ?? undefined,
           );
         },
       }),
