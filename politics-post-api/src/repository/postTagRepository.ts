@@ -1,17 +1,9 @@
 import { Db, Filter } from "mongodb";
 
 import { POST_TAGS_COLLECTION } from "@/db/collectionConstants";
+import type { PostTagCollection, PostTagEntity } from "@/type/db/dbType";
+import { toCamel, toSnake } from "@/type/db/typeConvertUtil";
 import { PostStatus } from "@/graphql/graphqlType";
-import { toCamel, ToCamelCase, toSnake } from "./typeConvertUtil";
-
-export type PostTagCollection = {
-  _id: string;
-  tag_name: string;
-  user_account_ids: string[];
-  status: (typeof PostStatus)[keyof typeof PostStatus];
-};
-
-export type PostTagEntity = ToCamelCase<PostTagCollection>;
 
 export const registerPostTags = async (db: Db, tags: PostTagEntity[]) => {
   const tagsCol = db.collection<PostTagCollection>(POST_TAGS_COLLECTION);

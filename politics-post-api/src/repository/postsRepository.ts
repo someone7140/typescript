@@ -6,22 +6,15 @@ import {
   USER_ACCOUNTS_COLLECTION,
 } from "@/db/collectionConstants";
 import { PostStatusType } from "@/graphql/graphqlType";
-import { toCamel, ToCamelCase, toSnake } from "./typeConvertUtil";
-import type { PostTagEntity, PostTagCollection } from "./postTagRepository";
-import type { AccountUserCollection } from "./userAccountsRepository";
-
-type PostCollection = {
-  _id: string;
-  title: string;
-  contents: string;
-  tag_ids: string[];
-  user_account_id: string;
-  status: PostStatusType;
-  updated_at: Date;
-  commit_at?: Date;
-};
-
-export type PostEntity = ToCamelCase<PostCollection>;
+import type {
+  AccountUserCollection,
+  PostCollection,
+  PostEntity,
+  PostTagCollection,
+  PostTagEntity,
+} from "@/type/db/dbType";
+import { toCamel, toSnake } from "@/type/db/typeConvertUtil";
+import type { ToCamelCase } from "@/type/db/typeConvertUtil";
 
 export const registerPost = async (db: Db, post: PostEntity) => {
   const postsCol = db.collection<PostCollection>(POSTS_COLLECTION);
@@ -45,6 +38,18 @@ export const deletePost = async (
 ) => {
   const postsCol = db.collection<PostCollection>(POSTS_COLLECTION);
   await postsCol.deleteOne({ _id: id, user_account_id: userAccountId });
+};
+
+export const addAdditionalInfoToPost = async (
+  db: Db,
+  id: string,
+  additionalInfo: string,
+) => {
+  const postsCol = db.collection<PostCollection>(POSTS_COLLECTION);
+  await postsCol.updateOne(
+    { _id: id },
+    { $push: { additional_info: additionalInfo } },
+  );
 };
 
 export const getPosts = async (

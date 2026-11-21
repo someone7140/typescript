@@ -1,19 +1,8 @@
 import { Db } from "mongodb";
 
 import { USER_ACCOUNTS_COLLECTION } from "@/db/collectionConstants";
-import { ToCamelCase, toCamel, toSnake } from "./typeConvertUtil";
-
-export type AccountUserCollection = {
-  _id: string;
-  name: string;
-  user_setting_id: string;
-  google_id: string;
-  url_list: string[];
-  detail?: string;
-  image_url?: string;
-};
-
-export type AccountUserEntity = ToCamelCase<AccountUserCollection>;
+import type { AccountUserCollection, AccountUserEntity } from "@/type/db/dbType";
+import { toCamel, toSnake } from "@/type/db/typeConvertUtil";
 
 export const getUserAccountByGoogleId = async (db: Db, googleId: string) => {
   const userAccountsCol = db.collection<AccountUserCollection>(

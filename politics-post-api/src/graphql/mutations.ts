@@ -1,4 +1,5 @@
 import {
+  addAdditionalInfoToMyPost,
   deleteMyPost,
   registerMyPost,
   updateMyPost,
@@ -8,6 +9,7 @@ import {
   registerUserAccountFromGoogle,
 } from "@/usecase/userAccountUsecase";
 import {
+  AddAdditionalInfoRequest,
   AuthCodeForGoogleRequest,
   builder,
   RegisterPostRequest,
@@ -61,9 +63,24 @@ export const setMutations = () => {
         },
         args: UpdatePostRequest,
         resolve: async (_root, args, context) => {
-          await deleteMyPost(
+          await updateMyPost(
+            context.var.db,
+            args,
+            context.var.loginUserAccountId!,
+          );
+          return true;
+        },
+      }),
+      addAdditionalInfoToPost: t.boolean({
+        authScopes: {
+          isAuthenticated: true,
+        },
+        args: AddAdditionalInfoRequest,
+        resolve: async (_root, args, context) => {
+          await addAdditionalInfoToMyPost(
             context.var.db,
             args.id,
+            args.additionalInfo,
             context.var.loginUserAccountId!,
           );
           return true;

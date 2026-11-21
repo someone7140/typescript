@@ -1,6 +1,6 @@
+import { InputShapeFromFields } from "@pothos/core";
 import { generate as generateV7 } from "@std/uuid/v7";
 import { Db } from "mongodb";
-import { InputShapeFromFields } from "@pothos/core";
 
 import {
   ErrorType,
@@ -14,9 +14,10 @@ import {
   getPosts,
   registerPost,
   updatePost,
+  addAdditionalInfoToPost,
 } from "@/repository/postsRepository";
-import { getTagIdsWithRegister } from "@/usecase/postTagUsecase";
 import { AppGraphQLError } from "@/type/error";
+import { getTagIdsWithRegister } from "@/usecase/postTagUsecase";
 
 export const registerMyPost = async (
   db: Db,
@@ -37,6 +38,7 @@ export const registerMyPost = async (
     tagIds: tagIds,
     status: req.status,
     updatedAt: new Date(),
+    additionalInfo: [],
     commitAt:
       req.status === "OPEN" || req.status === "PRIVATE"
         ? new Date()
@@ -65,6 +67,7 @@ export const updateMyPost = async (
     tagIds: tagIds,
     status: req.status,
     updatedAt: new Date(),
+    additionalInfo: [],
     commitAt:
       req.status === "OPEN" || req.status === "PRIVATE"
         ? new Date()
@@ -80,6 +83,19 @@ export const deleteMyPost = async (
 ) => {
   await checkDraftPost(db, userAccountId, id);
   await deletePost(db, id, userAccountId);
+};
+
+export const addAdditionalInfoToMyPost = async (
+  db: Db,
+  id: string,
+  additionalInfo: string,
+  userAccountId: string,
+) => {
+  const registeredPosts = await getPosts(db, userAccountId, undefined, id);
+  if (registeredPosts.length === 0) {
+    throw new AppGraphQLError("Post not found or you don't have permission", ErrorType.NOT_FOUND);
+  }
+  await addAdditionalInfoToPost(db, id, additionalInfo);
 };
 
 const toPostResultList = (r: Awaited<ReturnType<typeof getPosts>>[number]) => ({

@@ -145,6 +145,11 @@ export const UpdatePostRequest = builder.args((t) => ({
   ...PostRequestFields(t),
 }));
 
+export const AddAdditionalInfoRequest = builder.args((t) => ({
+  id: t.string({ required: true }),
+  additionalInfo: t.string({ required: true }),
+}));
+
 export const GetPostTagsRequest = builder.args((t) => ({
   keyword: t.string({ required: true }),
   isOpenOnly: t.boolean({ required: true }),
