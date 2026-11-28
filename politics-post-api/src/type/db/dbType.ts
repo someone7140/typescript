@@ -9,7 +9,7 @@ export type PostCollection = {
   user_account_id: string;
   status: PostStatusType;
   updated_at: Date;
-  additional_info: string[];
+  additional_info: { info: string; added_at: Date }[];
   commit_at?: Date;
 };
 

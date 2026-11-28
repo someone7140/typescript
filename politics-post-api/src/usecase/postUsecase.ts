@@ -10,11 +10,11 @@ import {
   UpdatePostRequest,
 } from "@/graphql/graphqlType";
 import {
+  addAdditionalInfoToPost,
   deletePost,
   getPosts,
   registerPost,
   updatePost,
-  addAdditionalInfoToPost,
 } from "@/repository/postsRepository";
 import { AppGraphQLError } from "@/type/error";
 import { getTagIdsWithRegister } from "@/usecase/postTagUsecase";
@@ -115,6 +115,7 @@ const toPostResultList = (r: Awaited<ReturnType<typeof getPosts>>[number]) => ({
     detail: r.userAccount.detail,
     imageUrl: r.userAccount.imageUrl,
   },
+  additionalInfo: r.additionalInfo,
   commitAt: r.commitAt,
 });
 
@@ -136,8 +137,10 @@ export const getMyPostLists = async (
   userAccountId: string,
   status?: PostStatusType,
   id?: string,
+  tagNames?: string[],
+  keyword?: string,
 ) => {
-  const results = await getPosts(db, userAccountId, status, id);
+  const results = await getPosts(db, userAccountId, status, id, tagNames, keyword);
   return results.map(toPostResultList);
 };
 

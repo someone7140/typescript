@@ -48,7 +48,11 @@ export const addAdditionalInfoToPost = async (
   const postsCol = db.collection<PostCollection>(POSTS_COLLECTION);
   await postsCol.updateOne(
     { _id: id },
-    { $push: { additional_info: additionalInfo } },
+    {
+      $push: {
+        additional_info: { info: additionalInfo, added_at: new Date() },
+      },
+    },
   );
 };
 
@@ -57,10 +61,12 @@ export const getPosts = async (
   userAccountId?: string,
   status?: PostStatusType,
   id?: string,
+  tagNames?: string[],
+  keyword?: string,
 ) => {
   const postsCol = db.collection<PostCollection>(POSTS_COLLECTION);
 
-  const filters = [];
+  const filters: object[] = [];
   if (userAccountId) {
     filters.push({ $match: { user_account_id: userAccountId } });
   }
@@ -69,6 +75,22 @@ export const getPosts = async (
   }
   if (status) {
     filters.push({ $match: { status: status } });
+  }
+  if (keyword) {
+    const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const keywordRegex = new RegExp(escapedKeyword, "i");
+    filters.push({
+      $match: {
+        $or: [{ title: keywordRegex }, { contents: keywordRegex }],
+      },
+    });
+  }
+
+  const postLookupFilters: object[] = [];
+  if (tagNames && tagNames.length > 0) {
+    postLookupFilters.push({
+      $match: { "tags.tag_name": { $in: tagNames } },
+    });
   }
 
   const results = await postsCol
@@ -87,6 +109,7 @@ export const getPosts = async (
           as: "tags",
         },
       },
+      ...postLookupFilters,
       {
         $lookup: {
           from: USER_ACCOUNTS_COLLECTION,
@@ -99,6 +122,16 @@ export const getPosts = async (
         $unwind: {
           path: "$user_account",
           preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $set: {
+          additional_info: {
+            $sortArray: {
+              input: "$additional_info",
+              sortBy: { added_at: 1 },
+            },
+          },
         },
       },
       {

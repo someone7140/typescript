@@ -1,3 +1,9 @@
+import { getPostTagsByKeywordAndUserAccount } from "@/usecase/postTagUsecase";
+import { getMyPostLists, getOpenPostLists } from "@/usecase/postUsecase";
+import {
+  getUserAccountByUserAccountId,
+  getUserAccountRegisterTokenFromGoogleAuthCode,
+} from "@/usecase/userAccountUsecase";
 import {
   AuthCodeForGoogleRequest,
   builder,
@@ -9,12 +15,6 @@ import {
   UserAccountAuthResponse,
   UserAccountRegisterTokenFromGoogleResponse,
 } from "./graphqlType";
-import { getPostTagsByKeywordAndUserAccount } from "@/usecase/postTagUsecase";
-import { getMyPostLists, getOpenPostLists } from "@/usecase/postUsecase";
-import {
-  getUserAccountByUserAccountId,
-  getUserAccountRegisterTokenFromGoogleAuthCode,
-} from "@/usecase/userAccountUsecase";
 
 export const setQueries = () => {
   builder.queryType({
@@ -63,6 +63,8 @@ export const setQueries = () => {
             context.var.loginUserAccountId!,
             _args.status ?? undefined,
             _args.id ?? undefined,
+            _args.tag ?? undefined,
+            _args.keyword ?? undefined,
           );
         },
       }),

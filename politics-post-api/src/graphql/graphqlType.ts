@@ -173,7 +173,24 @@ export const MyPostsRequest = builder.args((t) => ({
     required: false,
   }),
   id: t.string({ required: false }),
+  tag: t.stringList({ required: false }),
+  keyword: t.string({ required: false }),
 }));
+
+export const AdditionalInfoResponse = builder.objectType(
+  builder.objectRef<{ info: string; addedAt: Date }>("AdditionalInfoResponse"),
+  {
+    fields: (t) => ({
+      info: t.exposeString("info", { nullable: false }),
+      addedAt: t.field({
+        type: "DateTime",
+        resolve: (parent) => parent.addedAt,
+        nullable: false,
+      }),
+    }),
+  },
+);
+
 export const PostResponse = builder.objectType(
   builder.objectRef<{
     id: string;
@@ -183,6 +200,7 @@ export const PostResponse = builder.objectType(
     updateAt: Date;
     tags: (typeof PostTagResponse.$inferType)[];
     userAccount: typeof UserAccountInfoResponse.$inferType;
+    additionalInfo: (typeof AdditionalInfoResponse.$inferType)[];
     commitAt?: Date;
   }>("PostResponse"),
   {
@@ -208,6 +226,11 @@ export const PostResponse = builder.objectType(
       userAccount: t.field({
         type: UserAccountInfoResponse,
         resolve: (parent) => parent.userAccount,
+        nullable: false,
+      }),
+      additionalInfo: t.field({
+        type: [AdditionalInfoResponse],
+        resolve: (parent) => parent.additionalInfo,
         nullable: false,
       }),
       commitAt: t.field({
